@@ -58,7 +58,6 @@ contract Pear {
     
     }
     
-    
     event newAuthor(string name);
     
     function createAuthor(string _name)  public {
@@ -71,10 +70,8 @@ contract Pear {
         
         authors[_name] = _author;
         
-        //uint256 newPaperId = papers.push(_paper);
         emit newAuthor(_author.name);
         
-    
     }
 
   
@@ -82,9 +79,6 @@ contract Pear {
         return authors[name].reputation;
     
     }
-
-
-
 
 }
 
