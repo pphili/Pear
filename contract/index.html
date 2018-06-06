@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!--<link rel="stylesheet" type="text/css" href="main.css">-->
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    
+
+
+</head>
+<body>
+
+<div class="container">
+
+        <h2 id="instructor"></h2>
+        <span id="insTrans"></span>
+        <hr>
+
+        <label for="fName" class="col-lg-2 control-label">First Name</label>
+        <input id="fName" type="text">
+
+        <label for="lName" class="col-lg-2 control-label">Last Name</label>
+        <input id="lName" type="text">
+
+        <label for="age" class="col-lg-2 control-label">Instructor Age</label>
+        <input id="age" type="text">
+
+        <label for="paper" class="col-lg-2 control-label">Paper ID</label>
+        <input id="paper" type="text">
+
+        <button id="button">Update authors</button>
+
+        <button id="button2">get REp</button>
+
+        <button id="button3">Submit paper</button>
+
+        <button id="button4">Get paper</button>
+
+
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+		if (typeof web3 !== 'undefined') {
+       		web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        }
+		
+		web3.eth.defaultAccount = web3.eth.accounts[0];
+
+
+    var newAbi = web3.eth.contract(
+   [
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "createAuthor",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "paperIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAuthorsPapers",
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "getReputation",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_authorName",
+        "type": "string"
+      },
+      {
+        "name": "_paperId",
+        "type": "string"
+      }
+    ],
+    "name": "createPaper",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "paperId",
+        "type": "string"
+      }
+    ],
+    "name": "newPaper",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "name": "newAuthor",
+    "type": "event"
+  }
+]
+  
+ )
+
+		
+
+		var Coursetro = newAbi.at('0x2e4a14505c5a7d9679b6fe52b53cdfd1b3cd6bd8');
+		console.log(Coursetro);
+
+		<!--var instructorEvent = Coursetro.instructorInfo({}, 'latest');-->
+/*
+       instructorEvent.watch(function(error, result) {
+           if (result) {
+               if (result.blockHash != $("#insTrans").html())
+                    $("#loader").hide();
+
+               $("#insTrans").html('Block hash: ' + result.blockHash);
+               $("#instructor").html(web3.toAscii(result.args.fName) + ' ' + web3.toAscii(result.args.lName) + ' (' + result.args.age + ' years old)');
+           } else {
+                $("#loader").hide();
+           }
+       });*/
+
+    var authorEvent = Coursetro.newAuthor({});
+
+    authorEvent.watch(function(err, result){
+        if (result){
+          console.log(result.args.name);
+        }
+    });
+
+		$("#button").click(function() {
+				   Coursetro.createAuthor.sendTransaction( $("#fName").val(), (err, res) => {
+					   if (err) {
+                console.log(err);
+					   }
+             else{
+                console.log(res);
+                $("#insTrans").html(res.c + ' Instructors'); 
+
+             }
+
+				   });
+			   });
+
+        $("#button2").click(function() {
+           Coursetro.getReputation( $("#lName").val(), (err, res) => {
+             if (err) {
+                console.log(err);
+             }
+             else{
+                console.log(res.toFormat());
+                $("#insTrans").html(res.toFormat()); 
+
+             }
+
+           });
+         });
+
+        /*
+        Papers
+        */
+
+        var paperEvent = Coursetro.newPaper({});
+
+        paperEvent.watch(function(err, result){
+        if (result){
+          console.log(result.args.paperId);
+        }
+        });
+
+    $("#button3").click(function() {
+           Coursetro.createPaper.sendTransaction("authorpaper", "paperid",  (err, res) => {
+             if (err) {
+                console.log(err);
+             }
+             else{
+                console.log(res);
+                $("#insTrans").html(res.c + ' Instructors'); 
+
+             }
+
+           });
+         });
+
+        $("#button4").click(function() {
+           Coursetro.getAuthorsPapers( $("#paper").val(), 0, (err, res) => {
+             if (err) {
+                console.log(err);
+             }
+             else{
+                console.log(res.toFormat());
+                $("#insTrans").html(res.toFormat()); 
+
+             }
+
+           });
+         });
+
+
+    </script>
+
+</body>
+</html>

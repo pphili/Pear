@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title> tutorial </title>
+	<meta name = "viewport" content="width = device-width, initial-scale=1">
+	<link href = "{{ url_for('static', filename = 'css/bootstrap.min.css') }}" rel="stylesheet">
+	<link href = "{{ url_for('static', filename = 'css/custom.css') }}" rel="stylesheet">
+	<link rel = "shortcut icon" href = "{{ url_for('static', filename = 'pear.ico')}}">
+</head>
+
+
+<header>
+	<div class="navbar-header">
+		<a class="navbar-brand" href="/">
+			<img style = "max-width:70px; margin-top: -7px;" src = "{{ url_for('static', filename = 'images/pear.svg')}}">
+		</a>
+
+	</div>
+</header>
+
+<body>
+	<div class = "container">
+		<br>
+		<h4>Please Login:</h4>
+		<br>
+		<form action = "" class = "form-inline" method = "post">
+			
+			<input type = "text" class = "form-control" placeholder="Username" name="username" value="{{request.form.username}}">
+
+			<input type = "password" class = "form-control" placeholder="Password" name="password" value="{{request.form.password}}">
+
+			<input class="btn btn-default pear-background" type="submit" value="Login">
+
+		</form>
+
+		<p>{{error}}</p>
+
+	</div>
+
+
+
+
+
+</body>
